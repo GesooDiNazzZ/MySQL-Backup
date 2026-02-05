@@ -1,0 +1,78 @@
+{
+    "_comment": "DO NOT EDIT: FILE GENERATED AUTOMATICALLY",
+    "meta": {
+        "version": "PTDL_v1",
+        "update_url": null
+    },
+    "exported_at": "2024-01-01T00:00:00+00:00",
+    "name": "MySQL Backuper Python",
+    "author": "tuo@email.com",
+    "description": "Sistema di backup automatico per MySQL scritto in Python. Richiede un'immagine Docker con client MySQL installato.",
+    "features": null,
+    "docker_images": {
+        "ghcr.io/pterodactyl/yolks:python_3.11": "Python 3.11 (Attenzione: Richiede installazione client MySQL)",
+        "il_tuo_registry/mysql-backuper:latest": "Immagine Custom (Consigliata)"
+    },
+    "file_denylist": [],
+    "startup": "if [ -f requirements.txt ]; then pip install -U --prefix .local -r requirements.txt; fi; python main.py",
+    "config": {
+        "files": "{\r\n    \".env\": {\r\n        \"parser\": \"properties\",\r\n        \"find\": {\r\n            \"DB_HOST\": \"{{server.build.env.DB_HOST}}\",\r\n            \"DB_USER\": \"{{server.build.env.DB_USER}}\",\r\n            \"DB_PASSWORD\": \"{{server.build.env.DB_PASSWORD}}\",\r\n            \"RETENTION_DAYS\": \"{{server.build.env.RETENTION_DAYS}}\",\r\n            \"BACKUP_DIR\": \"{{server.build.env.BACKUP_DIR}}\"\r\n        }\r\n    }\r\n}",
+        "startup": "{\r\n    \"done\": \"--- Procedura completata ---\"\r\n}",
+        "logs": "{}",
+        "stop": "^C"
+    },
+    "scripts": {
+        "installation": {
+            "script": "#!/bin/bash\r\napt-get update\r\napt-get install -y git\r\n\r\n# Clona o scarica i file se necessario, oppure l'utente li caricherà manualmente.\r\necho \"Installazione completata. Carica i file python nel server.\"",
+            "container": "python:3.11-slim",
+            "entrypoint": "bash"
+        }
+    },
+    "variables": [
+        {
+            "name": "Database Host",
+            "description": "Indirizzo IP del server MySQL.",
+            "env_variable": "DB_HOST",
+            "default_value": "127.0.0.1",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string"
+        },
+        {
+            "name": "Database User",
+            "description": "Utente MySQL con permessi di lettura globali.",
+            "env_variable": "DB_USER",
+            "default_value": "root",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string"
+        },
+        {
+            "name": "Database Password",
+            "description": "Password dell'utente MySQL.",
+            "env_variable": "DB_PASSWORD",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string"
+        },
+        {
+            "name": "Giorni di Retention",
+            "description": "Numero di giorni per cui conservare i backup.",
+            "env_variable": "RETENTION_DAYS",
+            "default_value": "7",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|numeric|min:1"
+        },
+        {
+            "name": "Cartella Backup",
+            "description": "Nome della cartella dove salvare i backup.",
+            "env_variable": "BACKUP_DIR",
+            "default_value": "backups",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string"
+        }
+    ]
+}
