@@ -1,22 +1,19 @@
 FROM python:3.11-slim
 
 # Install system dependencies
-# We add the official MySQL repository to ensure we get the Oracle MySQL client, not MariaDB
 RUN apt-get update && apt-get install -y \
     wget \
-    lsb-release \
     gnupg \
-    && wget https://dev.mysql.com/get/mysql-apt-config_0.8.28-1_all.deb \
-    && dpkg -i mysql-apt-config_0.8.28-1_all.deb \
-    || (echo "mysql-apt-config installation failed expectedly (interactive), forcing non-interactive setup" \
-    && export DEBIAN_FRONTEND=noninteractive \
-    && echo "mysql-apt-config mysql-apt-config/select-server select mysql-8.0" | debconf-set-selections \
-    && echo "mysql-apt-config mysql-apt-config/select-product select Ok" | debconf-set-selections \
-    && dpkg -i mysql-apt-config_0.8.28-1_all.deb) \
+    lsb-release \
+    && rm -rf /var/lib/apt/lists/*
+
+# Add MySQL GPG key and repository manually to avoid interactive config errors
+# We use the 2023 key which is the current one for MySQL 8.0 repositories
+RUN wget -qO - https://repo.mysql.com/RPM-GPG-KEY-mysql-2023 | gpg --dearmor > /etc/apt/trusted.gpg.d/mysql.gpg \
+    && echo "deb http://repo.mysql.com/apt/debian/ $(lsb_release -sc) mysql-8.0" > /etc/apt/sources.list.d/mysql.list \
     && apt-get update \
     && apt-get install -y mysql-community-client \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm mysql-apt-config_0.8.28-1_all.deb
+    && rm -rf /var/lib/apt/lists/*
 
 # Create directory for the application
 WORKDIR /app
