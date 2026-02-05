@@ -6,7 +6,7 @@
     },
     "exported_at": "2024-01-01T00:00:00+00:00",
     "name": "MySQL Backuper Python",
-    "author": "tuo@email.com",
+    "author": "gesoodinazzz@email.com",
     "description": "Sistema di backup automatico per MySQL scritto in Python. Richiede un'immagine Docker con client MySQL installato.",
     "features": null,
     "docker_images": {
@@ -14,7 +14,7 @@
         "il_tuo_registry/mysql-backuper:latest": "Immagine Custom (Consigliata)"
     },
     "file_denylist": [],
-    "startup": "if [ -f requirements.txt ]; then pip install -U --prefix .local -r requirements.txt; fi; python main.py",
+    "startup": "if [ -f requirements.txt ]; then pip3 install -U --prefix .local -r requirements.txt; fi; python3 main.py",
     "config": {
         "files": "{\r\n    \".env\": {\r\n        \"parser\": \"properties\",\r\n        \"find\": {\r\n            \"DB_HOST\": \"{{server.build.env.DB_HOST}}\",\r\n            \"DB_USER\": \"{{server.build.env.DB_USER}}\",\r\n            \"DB_PASSWORD\": \"{{server.build.env.DB_PASSWORD}}\",\r\n            \"RETENTION_DAYS\": \"{{server.build.env.RETENTION_DAYS}}\",\r\n            \"BACKUP_DIR\": \"{{server.build.env.BACKUP_DIR}}\"\r\n        }\r\n    }\r\n}",
         "startup": "{\r\n    \"done\": \"--- Procedura completata ---\"\r\n}",
@@ -23,7 +23,7 @@
     },
     "scripts": {
         "installation": {
-            "script": "#!/bin/bash\r\napt-get update\r\napt-get install -y git\r\n\r\n# Clona o scarica i file se necessario, oppure l'utente li caricherà manualmente.\r\necho \"Installazione completata. Carica i file python nel server.\"",
+            "script": "#!/bin/bash\r\napt-get update\r\napt-get install -y curl\r\n\r\n# Scarica automaticamente i file necessari dalla repository\r\ncurl -o main.py https://raw.githubusercontent.com/TUO_NOME_GITHUB/TUO_NOME_REPO/main/main.py\r\ncurl -o requirements.txt https://raw.githubusercontent.com/TUO_NOME_GITHUB/TUO_NOME_REPO/main/requirements.txt\r\n\r\necho \"Installazione completata.\"",
             "container": "python:3.11-slim",
             "entrypoint": "bash"
         }
